@@ -5,6 +5,7 @@ new Vue({
         cart: {
             items:[]
         },
+        // Will need to be replace with a db of items
         products: [
             {
                 id: 1,
@@ -54,25 +55,66 @@ new Vue({
     methods:{
         // add 1 item product into cart
         addProductToCart: function(product){
-            this.cart.items.push({
-                product: product,
-                quantity: 1
-            })
+
+            var cartItem = this.getCartItem(product);
+            // If null add 1 to cart, If not Null add on to quantity
+            if(cartItem != null){
+                cartItem.quantity++
+            } else {
+                // if cartItem is null add 1 to carts
+                this.cart.items.push({
+                    product: product,
+                    quantity: 1
+                })
+            }
         // remove 1 item from product.instock
             product.inStock--
-        }
-    },
+        },
+        // Loop for items in cart for same items returns # in cart
+        getCartItem: function(product) {
+            for (var i=0; i<this.cart.items.length; i++) {
+                if (this.cart.items[i].product.id === product.id) {
+                    return this.cart.items[i]
+                }
+            }
 
+            return null;
+        },
+        // update Item.quantity in cart with ( inc+ , dec- )
+        inc: function(cartItem){
+            // Remove one inStock.qty
+            cartItem.product.inStock--
+            // Add one cart quantity
+            cartItem.quantity++
+
+        }, //End inc Item
+        dec: function(cartItem){
+            // ADD one inStock.qty
+            cartItem.product.inStock++
+            // remove one cart quantity
+            cartItem.quantity--
+            //Check if cart is zero
+		    if (cartItem.quantity <= 0) {
+			    //Remove 1 item from cart
+			    this.cart.items.splice(cartItem, 1)
+		    }
+            
+        }, //End dec Item
+    },
     computed: {
         cartTotal: function() {
             var total = 0
-
+            // gets totals for items in cart and add price
             this.cart.items.forEach(function(item) {
                 total += item.quantity * item.product.price
                 
-            });
+            })
 
             return total
+        },
+        // Get tax for items in cart total price
+        taxAmount: function() {
+           return ((this.cartTotal * 10) / 100) 
         }
     }
 });
