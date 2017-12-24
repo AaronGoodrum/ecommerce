@@ -100,6 +100,17 @@ new Vue({
 		    }
             
         }, //End dec Item
+        checkout: function() {
+            // Will loop cart putting back items,  Will need to be replace with a checkout payment..
+            if (confirm('Complete Transaction?')){
+            
+                this.cart.items.forEach(function(item){
+                    item.product.inStock += item.quantity
+                })
+                // setting the cart to null
+                this.cart.items = []
+            }
+        }
     },
     computed: {
         cartTotal: function() {
